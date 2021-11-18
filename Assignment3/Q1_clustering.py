@@ -29,11 +29,23 @@ def initializePoints(count):
 
     return points
 
-def check():
-    pass
+
 
 def euc_dist(point, centroid):
     return(math.sqrt((point[0] - centroid[0])**2 + (point[1] - centroid[1])**2 ))
+
+def check(past,current):
+    count=0
+    t_keys=0
+    for keys in past:
+        t_keys+=1
+        for t in current:
+            if euc_dist(keys,t)<1:
+                count+=1
+                break
+    if count==t_keys:
+        return False
+    return True
 
 def cluster(points,K,visuals = True):
     clusters=[]
@@ -48,12 +60,15 @@ def cluster(points,K,visuals = True):
         for i in range(K):
             temp = points[random.randrange(0, len(points))]
             centroids[(temp[0], temp[1])] = []
-        
+    
+    # past_centroids = centroids
+    for keys in centroids:
+        past_centroids[(random.randrange(10000, 20000), random.randrange(10000, 20000))] = []
     
     # generating centroids (cluster centers)
     # cluster
-    check = 0
-    while(check <= 2): #check() != True):
+    # check = 0
+    while(check(past_centroids,centroids)==True): #check() != True):
         if (iterations != 0):
             past_centroids = centroids
             centroids = dict()
@@ -88,21 +103,21 @@ def cluster(points,K,visuals = True):
         iterations += 1
 
         # plotting
-        clr = ['red','green','blue']
-        i = 0
-        for centroid in centroids:
-            # print(centroid)
-            lst = centroids[centroid]
-            # print("lst = ", lst)
-            if(len(lst) != 0):
-                x, y = zip(*lst)
-                plt.scatter(x,y , color=clr[i])
-                i += 1
-            plt.scatter(centroid[0], centroid[1], color='black')
+        # clr = ['red','green','blue', 'pink']
+        # i = 0
+        # for centroid in centroids:
+        #     # print(centroid)
+        #     lst = centroids[centroid]
+        #     # print("lst = ", lst)
+        #     if(len(lst) != 0):
+        #         x, y = zip(*lst)
+        #         plt.scatter(x,y , color=clr[i])
+        #         i += 1
+        #     plt.scatter(centroid[0], centroid[1], color='black')
 
-        plt.show()
+        # plt.show()
         
-        check += 1
+        # check += 1
     # x, y = zip(*points)
 
     # x = np.random.rand(N)
@@ -112,14 +127,27 @@ def cluster(points,K,visuals = True):
 
 
     
-    return clusters
+    return centroids
 
 
 
 def clusterQuality(clusters):
-    score = -1
+    score = -1 
+    score_lst = []
     #Your code to compute the quality of cluster will go here.
-    
+    for cluster in clusters:
+        total_cluster_dist = 0
+        for key in cluster.keys():
+            # print(key)
+            each_key_dist = 0
+            points = cluster[key]
+            # print(points)
+            for point in points:
+                each_key_dist += (euc_dist(point, key))**2
+            total_cluster_dist += each_key_dist
+        score_lst.append(total_cluster_dist)
+
+    score = min(score_lst)
     return score
     
 
@@ -128,21 +156,21 @@ def keepClustering(points,K,N,visuals):
     
     #Write you code to run clustering N times and return the formation having the best quality. 
     for n in range(N):
-        cluster(points, K, False)
-        break
+        clusters.append(cluster(points, K, visuals))
     
     return clusters
     
 
 
 
-K = 3
+K = 4
 N = 10
 points = initializePoints(1000)
 
 
 
 clusters = keepClustering(points,K,N,True)
+# print(clusters)
 
 print ("The score of best Kmeans clustering is:", clusterQuality(clusters))
 
