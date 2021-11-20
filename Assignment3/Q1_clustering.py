@@ -1,10 +1,8 @@
 """
 CS 351 - Artificial Intelligence 
 Assignment 3
-
 Student 1(Name and ID):
 Student 2(Name and ID):
-
 """
 import math
 # from math import pi
@@ -12,7 +10,6 @@ import random
 from matplotlib.colors import cnames
 import numpy as np
 import matplotlib.pyplot as plt
-
 
 def initializePoints(count):
     points = []
@@ -25,6 +22,16 @@ def initializePoints(count):
 
     return points
 
+def initializePoints_random(count):
+    points = []
+    for i in range(int(count/3)):
+        points.append([random.gauss(-100,20),random.gauss(100,30)])
+    for i in range(int(count/3)):
+        points.append([random.gauss(0,10),random.gauss(50,20)])
+    for i in range(int(count/3)):
+        points.append([random.gauss(80,20),random.gauss(80,50)])
+
+    return points
 
 
 def euc_dist(point, centroid):
@@ -99,28 +106,20 @@ def cluster(points,K,visuals = True):
         iterations += 1
 
         # plotting
-        # clr = ['red','green','blue', 'pink']
-        # i = 0
-        # for centroid in centroids:
-        #     # print(centroid)
-        #     lst = centroids[centroid]
-        #     # print("lst = ", lst)
-        #     if(len(lst) != 0):
-        #         x, y = zip(*lst)
-        #         plt.scatter(x,y , color=clr[i])
-        #         i += 1
-        #     plt.scatter(centroid[0], centroid[1], color='black')
+        if(visuals):
+            clr = ['red','green','blue', 'pink']
+            i = 0
+            for centroid in centroids:
+                # print(centroid)
+                lst = centroids[centroid]
+                # print("lst = ", lst)
+                if(len(lst) != 0):
+                    x, y = zip(*lst)
+                    plt.scatter(x,y , color=clr[i])
+                    i += 1
+                plt.scatter(centroid[0], centroid[1], color='black')
 
-        # plt.show()
-        
-        # check += 1
-    # x, y = zip(*points)
-
-    # x = np.random.rand(N)
-    # y = np.random.rand(N)
-
-    # plt.scatter(x, y)
-
+            plt.show()
 
     
     return centroids
@@ -144,6 +143,7 @@ def clusterQuality(clusters):
         score_lst.append(total_cluster_dist)
 
     score = min(score_lst)
+    print("Score list is :", score_lst)
     return score
     
 
@@ -161,11 +161,12 @@ def keepClustering(points,K,N,visuals):
 
 K = 4
 N = 10
+# points = initializePoints_random(1000)
+
 points = initializePoints(1000)
 
 
-
-clusters = keepClustering(points,K,N,True)
+clusters = keepClustering(points,K,N,False)
 # print(clusters)
 
 print ("The score of best Kmeans clustering is:", clusterQuality(clusters))

@@ -8,16 +8,25 @@ Student 2(Name and ID):
 
 """
 
+from hashlib import sha1
 import numpy as np
+import math
 import matplotlib.pyplot as plt
 
 """This function takes actual and predicted ratings and compute total mean square error(mse) in observed ratings.
 """
 def computeError(R,predR):
     
-    """Your code to calculate MSE goes here"""    
+    """Your code to calculate MSE goes here""" 
+    total_mse = 0
+    error = np.zeros((R.shape[0], R.shape[1]))
+
+    for i in range(R.shape[0]):
+        for j in range(R.shape[1]):
+            if(R[i][j] != 0):
+                error[i][j] = (R[i][j] - predR[i][j]) #**2
     
-    return 1000
+    return error#total_mse/(R.shape[0] * R.shape[1])
 
 
 """
@@ -26,10 +35,18 @@ where m = No of Users, n = No of items
 """
 def getPredictedRatings(P,Q,U,I):
 
-    """Your code to predict ratinngs goes here"""    
-
+    """Your code to predict ratinngs goes here"""
     
-    return None
+
+    R_hat = np.matmul(P, Q)
+    # print("r_hat before\n", R_hat)
+    for i in range(R_hat.shape[0]):
+        for j in range(R_hat.shape[1]):
+            R_hat[i][j] += U[i] + I[j]
+
+    # print("r_hat after\n", R_hat)
+    # return R_hat
+    return R_hat
     
     
 """This fucntion runs gradient descent to minimze error in ratings by adjusting P, Q, U and I matrices based on gradients.
@@ -39,9 +56,27 @@ def runGradientDescent(R,P,Q,U,I,iterations,alpha):
    
     stats = []
     
-    """Your gradient descent code goes here"""    
-
-    
+    """Your gradient descent code goes here"""
+    for each_iter in range(iterations):
+        total_mse = 0
+        R_hat = getPredictedRatings(P, Q, U, I)
+        error = computeError(R, R_hat)
+        features = P.shape[1]
+        for i in range(R_hat.shape[0]):
+            for j in range(R_hat.shape[1]):
+                for k in range(features):
+                    P[i][k] = P[i][k] + (2 * alpha * error[i][j] * Q[k][j])
+                    Q[k][j] = Q[k][j] + (2 * alpha * error[i][j] * P[i][k])
+                    # print("P =", P[i][k])
+                    # print("Q =", Q[k][j])
+                U[i] = U[i] + (2 * alpha * error[i][j])
+                # print("U =", U[i])
+                I[j] = I[j] + (2 * alpha * error[i][j])
+                # print("I =", I[i])
+                total_mse += (error[i][j])**2
+        # 
+        # print("iteration =", )
+        stats.append((each_iter, total_mse))
     
     """"finally returns (iter,mse) values in a list"""
     return stats
@@ -56,10 +91,15 @@ def matrixFactorization(R,k,iterations, alpha):
     """Your code to initialize P, Q, U and I matrices goes here. P and Q will be randomly initialized whereas U and I will be initialized as zeros. 
     Be careful about the dimension of these matrices
     """
-#    P = 
-#    Q = 
-#    U = 
-#    I = 
+    shape = R.shape
+    P = np.random.rand(shape[0], k)
+    # print(P)
+    Q = np.random.rand(k, shape[1])
+    # print(Q)
+    U = np.zeros(shape[0])
+    # print(U)
+    I = np.zeros(shape[1])
+    # print(I)
 
     #Run gradient descent to minimize error
     stats = runGradientDescent(R,P,Q,U,I,iterations,alpha)
