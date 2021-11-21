@@ -7,6 +7,7 @@ Student 2(Name and ID):
 import math
 # from math import pi
 import random
+from matplotlib import colors
 from matplotlib.colors import cnames
 import numpy as np
 import matplotlib.pyplot as plt
@@ -25,11 +26,11 @@ def initializePoints(count):
 def initializePoints_random(count):
     points = []
     for i in range(int(count/3)):
-        points.append([random.gauss(-100,20),random.gauss(100,30)])
+        points.append([random.gauss(-100,45),random.gauss(100,35)])
     for i in range(int(count/3)):
-        points.append([random.gauss(0,10),random.gauss(50,20)])
+        points.append([random.gauss(0,30),random.gauss(-50,20)])
     for i in range(int(count/3)):
-        points.append([random.gauss(80,20),random.gauss(80,50)])
+        points.append([random.gauss(100,50),random.gauss(80,40)])
 
     return points
 
@@ -43,7 +44,7 @@ def check(past,current):
     for keys in past:
         t_keys+=1
         for t in current:
-            if euc_dist(keys,t)<1:
+            if euc_dist(keys,t)<0.5:
                 count+=1
                 break
     if count==t_keys:
@@ -54,7 +55,13 @@ def cluster(points,K,visuals = True):
     clusters=[]
 
     #Your kmeans code will go here to cluster given points in K clsuters. If visuals = True, the code will also plot graphs to show the current state of clustering
-    
+    # plot iteration 0
+    if(visuals):
+        x, y = zip(*points)
+        plt.scatter(x, y, color='black')
+        plt.title("Iteration 0")
+        plt.show()
+
     centroids = dict()
     past_centroids = dict()
     
@@ -119,6 +126,7 @@ def cluster(points,K,visuals = True):
                     i += 1
                 plt.scatter(centroid[0], centroid[1], color='black')
 
+            plt.title("Iteration "+str(iterations))
             plt.show()
 
     
@@ -131,11 +139,13 @@ def clusterQuality(clusters):
     score_lst = []
     #Your code to compute the quality of cluster will go here.
     for cluster in clusters:
+        # number_points = 0
         total_cluster_dist = 0
         for key in cluster.keys():
             # print(key)
             each_key_dist = 0
             points = cluster[key]
+            # number_points += len(points)
             # print(points)
             for point in points:
                 each_key_dist += (euc_dist(point, key))**2
@@ -159,14 +169,15 @@ def keepClustering(points,K,N,visuals):
 
 
 
-K = 4
-N = 10
-# points = initializePoints_random(1000)
+K = 3
+N = 1
 
-points = initializePoints(1000)
+points = initializePoints_random(1000)
+
+# points = initializePoints(1000)
 
 
-clusters = keepClustering(points,K,N,False)
+clusters = keepClustering(points,K,N,True)
 # print(clusters)
 
 print ("The score of best Kmeans clustering is:", clusterQuality(clusters))
