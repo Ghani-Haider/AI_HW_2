@@ -26,11 +26,11 @@ def initializePoints(count):
 def initializePoints_random(count):
     points = []
     for i in range(int(count/3)):
-        points.append([random.gauss(-100,45),random.gauss(100,35)])
+        points.append([random.gauss(-25,20),random.gauss(0,20)])
     for i in range(int(count/3)):
-        points.append([random.gauss(0,30),random.gauss(-50,20)])
+        points.append([random.gauss(0,40),random.gauss(80,10)])
     for i in range(int(count/3)):
-        points.append([random.gauss(100,50),random.gauss(80,40)])
+        points.append([random.gauss(20,20),random.gauss(150,20)])
 
     return points
 
@@ -44,7 +44,7 @@ def check(past,current):
     for keys in past:
         t_keys+=1
         for t in current:
-            if euc_dist(keys,t)<0.5:
+            if euc_dist(keys,t)<0.75:
                 count+=1
                 break
     if count==t_keys:
@@ -58,7 +58,7 @@ def cluster(points,K,visuals = True):
     # plot iteration 0
     if(visuals):
         x, y = zip(*points)
-        plt.scatter(x, y, color='black')
+        plt.scatter(x, y, color='black', marker="+")
         plt.title("Iteration 0")
         plt.show()
 
@@ -122,9 +122,9 @@ def cluster(points,K,visuals = True):
                 # print("lst = ", lst)
                 if(len(lst) != 0):
                     x, y = zip(*lst)
-                    plt.scatter(x,y , color=clr[i])
+                    plt.scatter(x,y , color=clr[i], marker="+")
                     i += 1
-                plt.scatter(centroid[0], centroid[1], color='black')
+                plt.scatter(centroid[0], centroid[1], color='black', marker="D")
 
             plt.title("Iteration "+str(iterations))
             plt.show()
@@ -172,10 +172,9 @@ def keepClustering(points,K,N,visuals):
 K = 3
 N = 1
 
-points = initializePoints_random(1000)
+# points = initializePoints_random(1000)
 
-# points = initializePoints(1000)
-
+points = initializePoints(1000)
 
 clusters = keepClustering(points,K,N,True)
 # print(clusters)
